@@ -1,0 +1,66 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="loader.css">
+<style>
+  .header { padding: 20px 20px 50px 20px; }
+  .header > h2 { font-size: 26px; font-weight: 400; }
+  label { font-size: 18px; color: #382fe3; }
+  .int { padding: 0 0 10px 0; margin: -7px 0 0 0; border: none; border-bottom: 1.5px solid #bbbbbb; outline: none; font-size: 18px; color: #898989; }
+  #userForm { display: flex; flex-direction: column; gap: 10px; margin: -25px 0 0 0; padding: 60px 20px 10px 20px; background: #fff; border-radius: 25px; }
+  .btn { margin: 20px 0 0 0; padding: 10px; border-radius: 125px; border: none; background: #382fe3; color: #fff; font-weight: 600; font-size: 15px; }
+  .dont { position: fixed; bottom: 10px; right: 10px; text-align: right; }
+  .dont > a { text-decoration: none; color: #000; font-weight: 700; font-size: 18px; }
+  .dont > p { color: #898989; font-size: 16px; }
+</style>
+<div class="header">
+  <h2>Create Your</h2>
+  <h2>Account</h2>
+</div>
+<form id="userForm">
+  <label for="name">Name</label>
+  <input type="text" name="name" required class="int" />
+  <label for="Email">Email</label>
+  <input type="email" name="email" required class="int" />
+  <label for="mobile">Mobile</label>
+  <input type="number" name="mobile" required class="int"/>
+  <label for="password">Password</label>
+  <input type="password" name="password" required class="int" />
+  <button type="submit" class="btn">SIGN UP</button>
+</form>
+<div class="dont">
+  <p>Already Have Account?</p>
+  <a href="login.html">Sign In</a>
+</div>
+<div id="loader" style="display:none;"><div class="loader"></div></div>
+<script>
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbyuZNm-R--eRmaQR-ZIKvrEbfjayGP8af3La9An6ibcGbzl4daDms6qV5LtGfyDDfBVlA/exec';
+
+  if (localStorage.getItem('c_local')) {
+    window.location.href = "index.html";
+  }
+
+  document.getElementById('userForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    document.getElementById('loader').style.display = 'flex';
+
+    const formData = new FormData(this);
+    const email = formData.get('email');
+
+    fetch(scriptURL, { method: 'POST', body: formData })
+      .then(response => response.text())
+      .then(responseText => {
+        if (responseText === "exists") {
+          alert("Email already registered");
+          document.getElementById('loader').style.display = 'none';
+        } else {
+          localStorage.setItem('c_local', email);
+          window.location.href = "index.html";
+        }
+      })
+      .catch(error => {
+        alert('Submission failed');
+        document.getElementById('loader').style.display = 'none';
+      });
+  });
+</script>

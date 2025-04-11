@@ -1,0 +1,146 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="loader.css">
+<script src="https://kit.fontawesome.com/8aa17a250d.js" crossorigin="anonymous"></script>
+<style>
+  #menuBtn { position: fixed; top: 10px; right: 20px; font-size: 32px; color: #fff; cursor: pointer; }
+  #sideMenu { position: fixed; top: 0; left: -300px; width: 260px; height: 100%; background: #fff; box-shadow: 2px 0 5px rgba(0,0,0,0.3); padding: 20px; z-index: 998; transition: left 0.4s ease; }
+  #sideMenu.open { left: 0; }
+  #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; z-index: 997; }
+  #slider-container { margin: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; flex-direction: column; }
+  #slider-container > img { border-radius: 12px; max-height: 300px; max-width: 400px; }
+  #username > p , #username > span { font-size: 22px; font-weight: 400; }
+  #username { margin: 10px; }
+  .header { border-radius: 12px; margin: -50px 0 0 0; padding: 50px 0 10px 0; background: #382fe3; }
+  #cards { display: flex; flex-wrap: wrap; gap: 16px; padding: 10px; justify-content: center; }
+  #cards div { flex: 0 1 calc(50% - 16px); border-radius: 12px; overflow: hidden; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; background-color: #dddd; text-align: center; padding-bottom: 10px; transition: transform 0.2s ease; }
+  #cards div:hover { transform: translateY(-5px); }
+  #cards img { width: 100%; height: 150px; object-fit: cover; display: block; }
+  #cards h4 { margin: 10px 0 5px; font-size: 16px; }
+  #cards p { margin: 0; font-weight: bold; color: #333; }
+  .text { text-align: center; }
+  .slide-top { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #333; }
+  .slide-top > img { width: 60px; margin: 20px 0; border-radius: 125px; }
+  .close { border: none; background: none; }
+  .hyperlink { display: flex; flex-direction: column; margin: 20px 0 0 0; font-size: 24px; gap: 20px; }
+  .hyperlink > a { overflow: hidden; display: flex; align-items: center; text-decoration: none; color: #333; font-weight: 700; }
+  .hyperlink > a > i { overflow: hidden; font-size: 24px; }
+  .telegram { text-decoration: none; width: 50px; height: 50px; position: fixed; bottom: 20px; right: 20px; background: #0088cc; color: #fff; border-radius: 125px; border: none; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+  .telegram > i { overflow: hidden; }
+</style>
+<div id="menuBtn" style="display:none;">⋮</div>
+<div id="overlay" style="display:none;"></div>
+<div id="sideMenu">
+  <button onclick="closeSlider()" class="close"><?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg height="28px" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="28px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><polygon points="352,128.4 319.7,96 160,256 160,256 160,256 319.7,416 352,383.6 224.7,256 "/></svg></button>
+  <div class="slide-top">
+    <img src="https://media.istockphoto.com/id/1396723018/vector/astronaut-vector-illustration-design-hovering-carrying-a-flag.jpg?s=612x612&w=0&k=20&c=yMyaPpamdM_TuueMNve-64Mi6COtWW0HiD63UzwS7ek=">
+    <h3 id="sider-name"></h3>
+  </div>
+  <p style="display: none;">Coins: <span id="coinCount">0</span></p>
+  <div class="hyperlink">
+    <a onclick="reload()"><i class="fa-solid fa-house"></i> &nbsp;&nbsp;Home</a>
+    <a href="http://wa.me/918987726266"><i class="fa-solid fa-headphones-simple"></i> &nbsp;&nbsp;Help</a>
+    <a href="history.html"><i class="fa-solid fa-clipboard-check"></i> &nbsp;&nbsp;&nbsp;Orders</a>
+    <a onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> &nbsp;&nbsp;Logout</a>
+  </div>
+</div>
+
+<div id="mainContent" style="display:none;">
+  <div class="header">
+    <h2 id="username"></h2>
+    <div id="slider-container">
+      <img id="slider-image" src="" />
+      <div id="dots" style="text-align:center;margin-top:5px;"></div>
+    </div>
+  </div>
+  <div class="text"><h2>Courses</h2></div>
+  <div id="cards"></div>
+  <a href="#" class="telegram">
+    <i class="fa-brands fa-telegram"></i>
+  </a>
+</div>
+<div id="loader" style="display:flex;justify-content:center;align-items:center;"><div class="loader"></div></div>
+
+<script>
+  function reload(){
+    location.reload();
+  }
+
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwPtfYh97OsFK1vKhArQxNfWjfnYFjtSHwEggptpaaVe-zpmOLM-UM7wRvTFEy-8zii/exec';
+  const email = localStorage.getItem('c_local');
+  if (!email) window.location.href = "login.html";
+
+  const menuBtn = document.getElementById('menuBtn');
+  const sideMenu = document.getElementById('sideMenu');
+  const overlay = document.getElementById('overlay');
+
+  menuBtn.onclick = () => {
+    sideMenu.classList.add('open');
+    overlay.style.display = 'block';
+    menuBtn.style.display = 'none';
+  };
+
+  function closeSlider() {
+    sideMenu.classList.remove('open');
+    overlay.style.display = 'none';
+    menuBtn.style.display = 'block';
+  }
+
+  function logout() {
+    localStorage.removeItem('c_local');
+    window.location.href = "login.html";
+  }
+
+  fetch(scriptURL + '?action=index&email=' + encodeURIComponent(email))
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("loader").style.display = "none";
+      document.getElementById("mainContent").style.display = "block";
+      menuBtn.style.display = "block";
+
+      document.getElementById("username").innerHTML = "<p>Hey Dear, </p> <span>" + data.username + "</span>";
+      document.getElementById("sider-name").innerHTML = `<span>Hey,</span><p>${data.username}</p>`;
+      document.getElementById("coinCount").innerHTML = data.coins;
+
+      let sliderIndex = 0;
+      const images = data.slider;
+      const sliderImage = document.getElementById("slider-image");
+      const dotsContainer = document.getElementById("dots");
+      dotsContainer.innerHTML = "";
+
+      images.forEach((img, i) => {
+        const dot = document.createElement("span");
+        dot.style = "height:10px; width: 10px;margin:0 3px; display:inline-block; border-radius:50%; background:#fff;";
+        dotsContainer.appendChild(dot);
+      });
+
+      const updateSlider = () => {
+        sliderImage.src = images[sliderIndex].img;
+        sliderImage.onclick = () => window.location.href = images[sliderIndex].url;
+        Array.from(dotsContainer.children).forEach((d, i) => {
+          d.style.background = i === sliderIndex ? "#fff" : "#333";
+        });
+        sliderIndex = (sliderIndex + 1) % images.length;
+      };
+
+      updateSlider();
+      setInterval(updateSlider, 3000);
+
+      const cardsContainer = document.getElementById("cards");
+      cardsContainer.innerHTML = "";
+      data.info.forEach(item => {
+        const card = document.createElement("div");
+        card.innerHTML = `
+          <img src="${item.image}"/>
+          <h4>${item.title}</h4>
+          <p>₹${item.price}</p>
+        `;
+        card.onclick = () => {
+          localStorage.setItem('secret', item.key);
+          window.location.href = "main.html";
+        };
+        cardsContainer.appendChild(card);
+      });
+    });
+</script>
